@@ -159,8 +159,8 @@ Real-world modeling of movie datasets
 👤 Author
 
 Aayush Manoj Thakare
-Computer Engineering, IIIT Pune
-Backend Developer • Neo4j • Flask • Python
+Computer Engineering, I2IT Pune
+MERN Stack Developer • Neo4j • Flask • Python
 
 ⭐ Future Improvements
 
