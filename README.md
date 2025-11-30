@@ -158,7 +158,7 @@ Real-world modeling of movie datasets
 
 👤 Author
 
-Ram Kailas Ahire
+Aayush Manoj Thakare
 Computer Engineering, IIIT Pune
 Backend Developer • Neo4j • Flask • Python
 
