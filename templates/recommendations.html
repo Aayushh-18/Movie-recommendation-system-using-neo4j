@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommendations for {{ username }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .stats-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.95;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab {
+            padding: 15px 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+        
+        .recommendations-section {
+            display: none;
+        }
+        
+        .recommendations-section.active {
+            display: block;
+        }
+        
+        .section-header {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.3);
+        }
+        
+        .movie-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .movie-info {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        .genre-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .genre-tag {
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .empty-state p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Back to Home</a>
+        
+        <div class="header">
+            <h1>🎬 Recommendations for {{ username }}</h1>
+        </div>
+        
+        {% if stats %}
+        <div class="stats-card">
+            <h2>📊 Your Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.movies_watched }}</div>
+                    <div class="stat-label">Movies Watched</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.avg_rating }}</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.favorite_genres|length }}</div>
+                    <div class="stat-label">Favorite Genres</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="tabs">
+           
+            <button class="tab" onclick="showTab('graph-tab')">🕸️ Graph-Based</button>
+            
+        </div>
+        
+       
+        <div id="graph-tab" class="recommendations-section">
+            <h3 class="section-header">Graph-Based Recommendations</h3>
+            <div class="movies-grid">
+                {% if graph %}
+                    {% for movie in graph %}
+                    <div class="movie-card">
+                        <div class="movie-title">{{ movie.title }}</div>
+                        <div class="movie-info">📅 Year: {{ movie.year }}</div>
+                        <div class="movie-info">🔗 Connections: {{ movie.shared_connections }}</div>
+                        <div class="genre-tags">
+                            {% for genre in movie.genres %}
+                            <span class="genre-tag">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No recommendations available</h3>
+                        <p>Try rating more movies!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        
+    <div style="text-align: center; margin: 50px 0;">
+    <a href="/graph-visualization/{{ username }}" style="display: inline-block; padding: 20px 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); text-decoration: none; color: white; border-radius: 15px; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); transition: all 0.3s;">
+        🕸️ Explore Graph Visualization
+    </a>
+</div>
+    
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.recommendations-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

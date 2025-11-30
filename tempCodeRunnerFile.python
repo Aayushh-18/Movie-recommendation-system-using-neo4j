@@ -1,0 +1,177 @@
+setup_database.py
+
+
+from neo4j port GraphDatabase
+import random
+
+class MovieRecommendationDB:
+    def __init__(self, uri="bolt://localhost:7687", user="neo4j", password="password"):
+        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+    
+    def close(self):
+        self.driver.close()
+    
+    def clear_database(self):
+        """Clear all existing data"""
+        with self.driver.session() as session:
+            session.run("MATCH (n) DETACH DELETE n")
+            print("Database cleared!")
+    
+    def create_sample_data(self):
+        """Create comprehensive sample movie data"""
+        with self.driver.session() as session:
+            # Create Movies with detailed properties
+            movies = [
+                {"title": "The Shawshank Redemption", "year": 1994, "rating": 9.3, "genre": ["Drama", "Crime"]},
+                {"title": "The Dark Knight", "year": 2008, "rating": 9.0, "genre": ["Action", "Crime", "Drama"]},
+                {"title": "Inception", "year": 2010, "rating": 8.8, "genre": ["Action", "Sci-Fi", "Thriller"]},
+                {"title": "Pulp Fiction", "year": 1994, "rating": 8.9, "genre": ["Crime", "Drama"]},
+                {"title": "The Matrix", "year": 1999, "rating": 8.7, "genre": ["Action", "Sci-Fi"]},
+                {"title": "Forrest Gump", "year": 1994, "rating": 8.8, "genre": ["Drama", "Romance"]},
+                {"title": "The Godfather", "year": 1972, "rating": 9.2, "genre": ["Crime", "Drama"]},
+                {"title": "Interstellar", "year": 2014, "rating": 8.6, "genre": ["Adventure", "Drama", "Sci-Fi"]},
+                {"title": "The Prestige", "year": 2006, "rating": 8.5, "genre": ["Drama", "Mystery", "Thriller"]},
+                {"title": "Memento", "year": 2000, "rating": 8.4, "genre": ["Mystery", "Thriller"]},
+                {"title": "Fight Club", "year": 1999, "rating": 8.8, "genre": ["Drama"]},
+                {"title": "Goodfellas", "year": 1990, "rating": 8.7, "genre": ["Crime", "Drama"]},
+                {"title": "The Departed", "year": 2006, "rating": 8.5, "genre": ["Crime", "Drama", "Thriller"]},
+                {"title": "Tenet", "year": 2020, "rating": 7.4, "genre": ["Action", "Sci-Fi", "Thriller"]},
+                {"title": "Dunkirk", "year": 2017, "rating": 7.8, "genre": ["Action", "Drama", "War"]},
+            ]
+            
+            for movie in movies:
+                session.run("""
+                    CREATE (m:Movie {title: $title, year: $year, rating: $rating})
+                """, title=movie["title"], year=movie["year"], rating=movie["rating"])
+                
+                for genre in movie["genre"]:
+                    session.run("""
+                        MATCH (m:Movie {title: $title})
+                        MERGE (g:Genre {name: $genre})
+                        MERGE (m)-[:BELONGS_TO]->(g)
+                    """, title=movie["title"], genre=genre)
+            
+            print(f"Created {len(movies)} movies with genres!")
+            
+            # Create Actors
+            actors_movies = [
+                ("Morgan Freeman", ["The Shawshank Redemption", "The Dark Knight"]),
+                ("Christian Bale", ["The Dark Knight", "The Prestige"]),
+                ("Leonardo DiCaprio", ["Inception", "The Departed"]),
+                ("Christopher Nolan", ["Inception", "The Dark Knight", "Interstellar", "The Prestige", "Memento", "Tenet", "Dunkirk"]),
+                ("Tom Hanks", ["Forrest Gump"]),
+                ("Marlon Brando", ["The Godfather"]),
+                ("Brad Pitt", ["Fight Club"]),
+                ("Robert De Niro", ["Goodfellas"]),
+                ("Matt Damon", ["The Departed"]),
+                ("John Travolta", ["Pulp Fiction"]),
+                ("Keanu Reeves", ["The Matrix"]),
+                ("Matthew McConaughey", ["Interstellar"]),
+                ("Hugh Jackman", ["The Prestige"]),
+            ]
+            
+            for actor, movie_list in actors_movies:
+                session.run("CREATE (a:Actor {name: $name})", name=actor)
+                for movie_title in movie_list:
+                    session.run("""
+                        MATCH (a:Actor {name: $actor})
+                        MATCH (m:Movie {title: $movie})
+                        MERGE (a)-[:ACTED_IN]->(m)
+                    """, actor=actor, movie=movie_title)
+            
+            print(f"Created {len(actors_movies)} actors with relationships!")
+            
+            # Create Directors (Note: Christopher Nolan doubles as director)
+            directors_movies = [
+                ("Frank Darabont", ["The Shawshank Redemption"]),
+                ("Christopher Nolan", ["The Dark Knight", "Inception", "Interstellar", "The Prestige", "Memento", "Tenet", "Dunkirk"]),
+                ("Quentin Tarantino", ["Pulp Fiction"]),
+                ("Wachowski Brothers", ["The Matrix"]),
+                ("Robert Zemeckis", ["Forrest Gump"]),
+                ("Francis Ford Coppola", ["The Godfather"]),
+                ("David Fincher", ["Fight Club"]),
+                ("Martin Scorsese", ["Goodfellas", "The Departed"]),
+            ]
+            
+            for director, movie_list in directors_movies:
+                session.run("MERGE (d:Director {name: $name})", name=director)
+                for movie_title in movie_list:
+                    session.run("""
+                        MATCH (d:Director {name: $director})
+                        MATCH (m:Movie {title: $movie})
+                        MERGE (d)-[:DIRECTED]->(m)
+                    """, director=director, movie=movie_title)
+            
+            print(f"Created {len(directors_movies)} directors!")
+            
+            # Create Users with realistic viewing patterns
+            users = ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"]
+            
+            for user in users:
+                session.run("CREATE (u:User {name: $name})", name=user)
+            
+            # Create viewing history with ratings
+            viewing_patterns = [
+                ("Alice", [("The Shawshank Redemption", 5), ("The Dark Knight", 5), ("Inception", 4), ("Forrest Gump", 5)]),
+                ("Bob", [("The Matrix", 5), ("Inception", 5), ("Interstellar", 4), ("Tenet", 3)]),
+                ("Charlie", [("Pulp Fiction", 5), ("The Godfather", 5), ("Goodfellas", 4), ("The Departed", 4)]),
+                ("David", [("The Dark Knight", 5), ("The Prestige", 4), ("Memento", 5), ("Inception", 5)]),
+                ("Emma", [("Forrest Gump", 5), ("The Shawshank Redemption", 4), ("Interstellar", 3)]),
+                ("Frank", [("Fight Club", 5), ("Pulp Fiction", 4), ("The Matrix", 5), ("Memento", 4)]),
+                ("Grace", [("The Prestige", 5), ("Inception", 4), ("The Departed", 4), ("The Dark Knight", 5)]),
+                ("Henry", [("Interstellar", 5), ("Inception", 4), ("The Matrix", 5), ("Dunkirk", 3)]),
+            ]
+            
+            for user, ratings in viewing_patterns:
+                for movie, rating in ratings:
+                    session.run("""
+                        MATCH (u:User {name: $user})
+                        MATCH (m:Movie {title: $movie})
+                        MERGE (u)-[:RATED {rating: $rating}]->(m)
+                    """, user=user, movie=movie, rating=rating)
+            
+            print(f"Created {len(users)} users with viewing history!")
+            
+            # Create some SIMILAR_TO relationships based on genre overlap
+            session.run("""
+                MATCH (m1:Movie)-[:BELONGS_TO]->(g:Genre)<-[:BELONGS_TO]-(m2:Movie)
+                WHERE id(m1) < id(m2)
+                WITH m1, m2, count(g) as common_genres
+                WHERE common_genres >= 2
+                MERGE (m1)-[:SIMILAR_TO {score: common_genres}]-(m2)
+            """)
+            
+            print("Created similarity relationships!")
+    
+    def create_indexes(self):
+        """Create indexes for better performance"""
+        with self.driver.session() as session:
+            session.run("CREATE INDEX movie_title IF NOT EXISTS FOR (m:Movie) ON (m.title)")
+            session.run("CREATE INDEX user_name IF NOT EXISTS FOR (u:User) ON (u.name)")
+            session.run("CREATE INDEX genre_name IF NOT EXISTS FOR (g:Genre) ON (g.name)")
+            print("Indexes created!")
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("Movie Recommendation System - Database Setup")
+    print("=" * 60)
+    print("\nMake sure Neo4j is running on bolt://localhost:7687")
+    print("Default credentials: neo4j/password")
+    print("\nStarting setup...\n")
+    
+    # IMPORTANT: Change 'password' to YOUR Neo4j password!
+    db = MovieRecommendationDB(uri="bolt://localhost:7687", user="neo4j", password="Ramahire0618")
+    
+    try:
+        # Clear and populate
+        db.clear_database()
+        db.create_sample_data()
+        db.create_indexes()
+        
+        print("\n" + "=" * 60)
+        print("✓ Database setup complete!")
+        print("=" * 60)
+        print("\nYou can now run the recommendation queries!")
+        
+    finally:
+        db.close()

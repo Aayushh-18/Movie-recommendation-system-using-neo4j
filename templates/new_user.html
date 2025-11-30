@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New User - Rate Movies</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #e0e0e0;
+        }
+        
+        .instruction {
+            background: rgba(239, 68, 68, 0.15);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .instruction strong {
+            color: #ef4444;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 35px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ef4444;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 40px 0 25px 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .movie-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .movie-item:hover {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .movie-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .rating-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .rating-label {
+            font-weight: 600;
+            margin-right: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .rating-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .rating-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .rating-btn.selected {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .skip-text {
+            color: #888;
+            font-size: 0.95rem;
+            font-style: italic;
+            margin-left: 10px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Back to Home</a>
+        
+        <h1>🎬 Welcome!</h1>
+        <p class="subtitle">Rate at least 3 movies to get personalized recommendations</p>
+        
+        <div class="instruction">
+            <strong>📝 Instructions:</strong> Rate the movies below from 1 (didn't like) to 5 (loved it). 
+            You can skip movies you haven't seen.
+        </div>
+        
+        <form method="POST" action="/submit-ratings" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="username">Your Name:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your name" required>
+            </div>
+            
+            <h3 class="section-title">Rate These Movies:</h3>
+            
+            {% for movie in movies %}
+            <div class="movie-item">
+                <div class="movie-title">{{ movie.title }} ({{ movie.year }})</div>
+                <div class="rating-group">
+                    <span class="rating-label">Rating:</span>
+                    {% for i in range(1, 6) %}
+                    <label class="rating-btn" onclick="selectRating(this, '{{ movie.title }}', {{ i }})">
+                        {{ i }} ⭐
+                        <input type="radio" name="rating_{{ movie.title }}" value="{{ i }}" style="display: none;">
+                    </label>
+                    {% endfor %}
+                    <span class="skip-text">or skip</span>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="submit-btn">Get My Recommendations! 🎯</button>
+        </form>
+    </div>
+    
+    <script>
+        function selectRating(btn, movieTitle, rating) {
+            const group = btn.parentElement;
+            const buttons = group.querySelectorAll('.rating-btn');
+            buttons.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+        
+        function validateForm() {
+            const form = document.querySelector('form');
+            const radios = form.querySelectorAll('input[type="radio"]:checked');
+            
+            if (radios.length < 3) {
+                alert('Please rate at least 3 movies to get recommendations!');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
